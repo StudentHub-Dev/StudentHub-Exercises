@@ -129,7 +129,7 @@ def extract_images(pdf_path):
         images = []
         
         for bbox in bboxes:
-            zoom = 3    # zoom factor not to lose the quality
+            zoom = 5    # zoom factor not to lose the quality
             mat = fitz.Matrix(zoom, zoom)
             page = doc[bbox["page"] - 1]
             pix = page.get_pixmap(matrix = mat)
@@ -238,13 +238,24 @@ def scrape_exercises(url):
 
         # Save the images inside the created folder
         for exercise_image, solution_image, answer in zip(exercises_images, solutions_images, answers):
-            if not answer:
-                continue
-
             # Create a random name for the exercise folder
             exercise_folder_name = "".join(random.sample(s, 10))
             exercise_folder_path = os.path.join(folder_path, exercise_folder_name)
 
+            if not answer:
+                os.makedirs(exercise_folder_path, exist_ok=True)
+                exercise_image.save(os.path.join(exercise_folder_path, "question_CHANGE_TO_MULTIPLECHOICE.png"))
+                solution_image.save(os.path.join(exercise_folder_path, "tip1_CHANGE_TO_MULTIPLECHOICE.png"))
+                with open(os.path.join(exercise_folder_path, "info.json"), "w") as f:
+                    answer = {
+                        "Author": "Python",
+                        "Difficulty": 2,
+                        "Answers": [
+                
+                        ]
+                    }
+                    dump(answer, f)
+            continue
             # Create the exercise folder
             os.makedirs(exercise_folder_path, exist_ok=True)
 
